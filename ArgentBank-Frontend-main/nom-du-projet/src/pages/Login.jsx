@@ -1,9 +1,9 @@
-import Form from '../components/Form';
+import FormConnect from '../components/FormConnect';
 
 function Login() {
   return (
     <main className="main bg-dark">
-      <Form />
+      <FormConnect />
     </main>
   );
 }

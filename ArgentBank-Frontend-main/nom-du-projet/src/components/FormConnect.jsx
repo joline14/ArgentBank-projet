@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useDispatch} from 'react-redux';
 import {login} from '../Redux/Reducer/authSlice'
 
- function Form() {
+ function FormConnect() {
   
 
   const dispatch = useDispatch();
@@ -103,4 +103,4 @@ import {login} from '../Redux/Reducer/authSlice'
   );
 }
 
-export default Form
+export default FormConnect
