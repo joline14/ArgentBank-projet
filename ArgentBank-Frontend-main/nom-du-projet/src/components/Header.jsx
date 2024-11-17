@@ -1,31 +1,36 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+
+import { useDispatch, useSelector } from 'react-redux';
+import {login, logout } from '../Redux/Reducer/authSlice'
 import Logo from '../assets/argentBankLogo.png'
 
 function Header() {
-//État pour vérifier si l'utilisateur est connecté et le profil utilisateur
-const [isAuthenticated, setIsAuthenticated] = useState(false);
-const [userProfile, setUserProfile] = useState(null);
 
-// Vérifie s'il y a un token au chargement de la page
-useEffect(() => {
-  const token = localStorage.getItem('authToken');
-  if (token) {
-    setIsAuthenticated(true); // Met à jour l'état de connexion
-    const storedProfile = JSON.parse(localStorage.getItem('userProfile'));
-    if (storedProfile) {
-      setUserProfile(storedProfile); // Charge le profil utilisateur
-    }
-  }
-}, []);
+    //useSelector pour extraire la valeur de isAuthenticated depuis le store Redux
+    const isAuthenticated = useSelector((state) => state.authentication.isAuthenticated);
 
-// Fonction pour gérer la déconnexion
-const handleSignOut = () => {
-  localStorage.removeItem('authToken'); // Supprime le token
-  localStorage.removeItem('userProfile'); // Supprime le profil
-  setIsAuthenticated(false); // Met à jour l'état de connexion
-  setUserProfile(null); // Réinitialise le profil
-};
+    // useDispatch pour obtenir la fonction de dispatch du store Redux
+    const dispatch = useDispatch();
+  
+    const userProfile = useSelector((state) => state.user);
+  
+    //Vérifie la présence du token au chargement
+    useEffect(() => {
+      const token = localStorage.getItem('authToken');
+      if (token) {
+        //cofirme une authentification
+        dispatch(login({ token }));
+      }
+    }, [dispatch]);
+
+    
+    const handleSignOut = () => {
+      dispatch(logout()); // Déconnecte l'utilisateur via Redux
+      localStorage.removeItem('authToken'); // Supprime le token de localStorage
+      localStorage.removeItem('userProfile'); // Supprime le profil utilisateur de localStorage (si stocké)
+    };
+  
 
 return(
     <header>
@@ -39,7 +44,7 @@ return(
         {isAuthenticated ? (
           // Si l'utilisateur est connecté
           <div className="main-nav-ctaItem">
-            <Link className="main-nav-item" to="./profile">
+            <Link className="main-nav-item" to="./user">
               <i className="fa fa-user-circle"></i>
               {userProfile ? userProfile.userName : 'Load'}
             </Link>

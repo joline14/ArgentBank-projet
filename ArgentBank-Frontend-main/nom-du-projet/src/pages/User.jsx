@@ -2,9 +2,12 @@ import React, { useEffect, useState } from 'react';
 import Account from '../components/Acount';
 import EditName from '../components/EditName';
 
+import { useDispatch } from 'react-redux';
+import { setProfile } from '../Redux/Reducer/profileSlice';
+
 function User() {
-  // État pour stocker le profil utilisateur
-  const [profile, setProfile] = useState(null);
+
+  const dispatch = useDispatch();
 
   // Utilisation de useEffect pour récupérer le profil au chargement de la page
   useEffect(() => {
@@ -15,33 +18,30 @@ function User() {
   }, []);
 
   // Fonction pour récupérer les données du profil depuis l'API
-  function fetchProfileData(authToken) {
-    fetch('http://localhost:3001/api/v1/user/profile', {
+  async function fetchProfileData(authToken) {
+    try{
+    const response= await fetch('http://localhost:3001/api/v1/user/profile', {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${authToken}`,
       },
     })
-      .then(response => {
         if (response.ok) {
-          return response.json(); // Convertit la réponse en JSON si OK
+          const responseData = await response.json();
+          // Dispatch l'action setProfile avec les données de profil récupérées
+          dispatch(setProfile(responseData));
+          console.log(responseData);
+          console.log(responseData.body);
         } else {
           console.error('Erreur :', response.statusText); // Affiche une erreur si non OK
         }
-      })
-      .then(data => {
-        if (data) {
-          setProfile(data.body); // Met à jour l'état avec les données
-          localStorage.setItem('userProfile', JSON.stringify(data.body)); // Stocke les données dans localStorage
-          console.log(data.body); // Affiche les données dans la console
-        }
-      })
-      .catch(error => {
+     
+      }catch(error){
         console.error('Erreur :', error); // Affiche une erreur en cas de problème
-      });
+      };
   }
-
+ 
   return (
     <main className="main bg-dark">
       <div className="header">

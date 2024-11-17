@@ -1,20 +1,24 @@
 import { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { updateUserName } from '../Redux/Reducer/profileSlice';
 
 function EditName() {
-  // Récupère les données utilisateur et le token depuis localStorage
-  const initialUserProfile = JSON.parse(localStorage.getItem('userProfile') || '{}');
-  const token = localStorage.getItem('authToken') || '';
+
+  const dispatch= useDispatch();
+
+  const userProfile= useSelector((state)=>state.user)
+
+   // Récupération du jeton d'authentification depuis le Redux store
+   const token = useSelector((state) => state.authentication.token);
 
   // États pour gérer l'utilisateur, l'édition et les erreurs
-  const [userProfile, setUserProfile] = useState(initialUserProfile);
   const [isEditing, setIsEditing] = useState(false);
   const [editedUserName, setEditedUserName] = useState(userProfile.userName || '');
-  const [errorMessage, setErrorMessage] = useState('');
 
   // Met à jour le nom d'utilisateur quand le profil change
   useEffect(() => {
     setEditedUserName(userProfile.userName || '');
-  }, [userProfile]);
+  }, [userProfile.userName]);
 
   // Active le mode d'édition
   const handleEditClick = () => {
@@ -22,11 +26,11 @@ function EditName() {
   };
 
   // Sauvegarde les modifications
-  const handleSaveClick = (event) => {
+  const handleSaveClick = async (event) => {
     event.preventDefault();
     setIsEditing(false);
-
-    fetch('http://localhost:3001/api/v1/user/profile', {
+    try{
+    const response= await fetch('http://localhost:3001/api/v1/user/profile', {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -34,23 +38,28 @@ function EditName() {
       },
       body: JSON.stringify({ userName: editedUserName }),
     })
-      .then(response => {
         if (response.ok) {
-          return response.json();
+          const responseData= await response.json();
+          dispatch(updateUserName(editedUserName));
+          console.log('Le nom d/utilisateur a été mis à jour avec succès :', responseData);
         } else {
-          return response.json().then(err => {
-            throw new Error(err.message || 'Erreur inconnue');
-          });
+          if (response.status === 401) {
+            const errorData = await response.json();
+            console.error('Error 401 :', errorData.message);
         }
-      })
-      .then(data => {
-        const updatedProfile = { ...userProfile, userName: editedUserName };
-        setUserProfile(updatedProfile);
-        localStorage.setItem('userProfile', JSON.stringify(updatedProfile));
-      })
-      .catch(error => {
-        setErrorMessage(error.message || 'Une erreur est survenue');
-      });
+    
+      else if (response.status === 400) {
+        const errorData = await response.json();
+        console.error('Error 400 :', errorData);
+      } else {
+        console.error('Error :', response.statusText);
+      }
+    }
+    }
+    catch (error) {
+      // Gestion des erreurs liées à la requête
+      console.error('Error : ', error);
+    }
   };
 
   // Annule l'édition
@@ -106,7 +115,6 @@ function EditName() {
             <button type="submit" className="edit-button edit-button--save">Save</button>
             <button type="button" className="edit-button edit-button--cancel" onClick={handleCancelClick}>Cancel</button>
           </div>
-          {errorMessage && <p className="errorMsg">{errorMessage}</p>}
         </form>
       ) : (
         <>

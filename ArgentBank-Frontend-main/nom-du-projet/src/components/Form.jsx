@@ -1,7 +1,12 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useDispatch} from 'react-redux';
+import {login} from '../Redux/Reducer/authSlice'
 
-export default function Form() {
+ function Form() {
+  
+
+  const dispatch = useDispatch();
   const navigate = useNavigate();
 
    // États pour les champs du formulaire et les messages d'erreur
@@ -10,8 +15,8 @@ export default function Form() {
   const [errorMessage, setErrorMessage] = useState('');
 
   // Fonction de soumission du formulaire
-  const handleSubmit = async (even) => {
-    even.preventDefault();
+  const handleSubmit = async (event) => {
+    event.preventDefault();
 
     // Création d'un objet 'formData' 
     const formData = {
@@ -35,8 +40,14 @@ export default function Form() {
         console.log(responseData);
         const token = responseData.body.token;
         localStorage.setItem('authToken', token);
+        dispatch(login({ token })); 
+        navigate('/User');  // Redirection vers la page UserJ
 
-        navigate('/User');  // Redirection vers la page User
+        // Réinitialisation des champs et des messages d'erreur
+        setEmail('');
+        setPassword('');
+        setErrorMessage('');
+
       } else {
        // Affichage du message d'erreur en cas d'échec
         const errorData = await response.json();
@@ -64,7 +75,7 @@ export default function Form() {
             type="text"
             id="username"
             value={email}
-            onChange={(even) => setEmail(even.target.value)}
+            onChange={(event) => setEmail(event.target.value)}
             autoComplete="username"
             required
           />
@@ -75,7 +86,7 @@ export default function Form() {
             type="password"
             id="password"
             value={password}
-            onChange={(even) => setPassword(even.target.value)}
+            onChange={(event) => setPassword(event.target.value)}
             autoComplete="current-password"
             required
           />
@@ -91,3 +102,5 @@ export default function Form() {
     </section>
   );
 }
+
+export default Form
