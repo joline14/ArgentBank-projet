@@ -18,14 +18,14 @@ import {login} from '../Redux/Reducer/authSlice'
   const handleSubmit = async (event) => {
     event.preventDefault();
 
-    // Création d'un objet 'formData' 
+   // Création des données du formulaire 
     const formData = {
       email: email,
       password: password,
     };
 
     try {
-      // Envoie d'une requête HTTP POST
+      // Envoie de la requête HTTP POST
       const response = await fetch('http://localhost:3001/api/v1/user/login', {
         method: 'POST',
         headers: {
@@ -41,7 +41,7 @@ import {login} from '../Redux/Reducer/authSlice'
         const token = responseData.body.token;
         localStorage.setItem('authToken', token);
         dispatch(login({ token })); 
-        navigate('/User');  // Redirection vers la page UserJ
+        navigate('/User');  // Redirection vers la page User
 
         // Réinitialisation des champs et des messages d'erreur
         setEmail('');
@@ -66,7 +66,7 @@ import {login} from '../Redux/Reducer/authSlice'
       <i className="fa fa-user-circle sign-in-icon"></i>
       <h1>Sign In</h1>
 
-      {/*Formulaire affichant le message d'erreur uniquement en cas de besoin*/}
+      {/*affichage du message d'erreur si nécessaire */}
       <form onSubmit={handleSubmit}>
         {errorMessage && <p className="errorMsg">{errorMessage}</p>}
         <div className="input-wrapper">

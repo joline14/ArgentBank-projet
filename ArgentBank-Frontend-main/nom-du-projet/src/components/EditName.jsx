@@ -8,14 +8,14 @@ function EditName() {
 
   const userProfile= useSelector((state)=>state.user)
 
-   // Récupération du jeton d'authentification depuis le Redux store
+   // Récupère le token d'authentification depuis le Redux store
    const token = useSelector((state) => state.authentication.token);
 
-  // États pour gérer l'utilisateur, l'édition et les erreurs
+  // États pour gérer l'utilisateur et l'édition
   const [isEditing, setIsEditing] = useState(false);
   const [editedUserName, setEditedUserName] = useState(userProfile.userName || '');
 
-  // Met à jour le nom d'utilisateur quand le profil change
+  // Met à jour userName" quand le profil change
   useEffect(() => {
     setEditedUserName(userProfile.userName || '');
   }, [userProfile.userName]);
@@ -40,7 +40,7 @@ function EditName() {
     })
         if (response.ok) {
           const responseData= await response.json();
-          dispatch(updateUserName(editedUserName));
+          dispatch(updateUserName(editedUserName));// Met à jour dans Redux
           console.log('Le nom d/utilisateur a été mis à jour avec succès :', responseData);
         } else {
           if (response.status === 401) {
@@ -68,7 +68,7 @@ function EditName() {
     setIsEditing(false);
   };
 
-  // Met à jour la valeur de l'input
+  // Met à jour le champ "editedUserName"
   const handleUserNameChange = (event) => {
     setEditedUserName(event.target.value);
   };

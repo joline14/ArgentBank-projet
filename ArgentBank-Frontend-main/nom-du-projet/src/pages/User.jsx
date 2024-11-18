@@ -9,16 +9,16 @@ function User() {
 
   const dispatch = useDispatch();
 
-  // Utilisation de useEffect pour récupérer le profil au chargement de la page
+  // Récupère les données du le profil au chargement de la page
   useEffect(() => {
     const authToken = localStorage.getItem('authToken'); // Récupération du token
     if (authToken) {
-      fetchProfileData(authToken); // Appel de la fonction pour récupérer les données
+      getUserProfile(authToken); // Appel de la fonction pour récupérer les données
     }
   }, []);
 
-  // Fonction pour récupérer les données du profil depuis l'API
-  async function fetchProfileData(authToken) {
+  // Récupère les données du profil depuis l'API
+  async function getUserProfile(authToken) {
     try{
     const response= await fetch('http://localhost:3001/api/v1/user/profile', {
       method: 'GET',
@@ -29,7 +29,6 @@ function User() {
     })
         if (response.ok) {
           const responseData = await response.json();
-          // Dispatch l'action setProfile avec les données de profil récupérées
           dispatch(setProfile(responseData));
           console.log(responseData);
           console.log(responseData.body);

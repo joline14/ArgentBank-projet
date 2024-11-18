@@ -7,12 +7,9 @@ import Logo from '../assets/argentBankLogo.png'
 
 function Header() {
 
-    //useSelector pour extraire la valeur de isAuthenticated depuis le store Redux
-    const isAuthenticated = useSelector((state) => state.authentication.isAuthenticated);
-
-    // useDispatch pour obtenir la fonction de dispatch du store Redux
+    // Récupère dispatch, auth et profil utilisateur depuis Redux
     const dispatch = useDispatch();
-  
+    const isAuthenticated = useSelector((state) => state.authentication.isAuthenticated);  
     const userProfile = useSelector((state) => state.user);
   
     //Vérifie la présence du token au chargement
@@ -24,15 +21,15 @@ function Header() {
       }
     }, [dispatch]);
 
-    
+    // Déconnexion de l'utilisateur
     const handleSignOut = () => {
-      dispatch(logout()); // Déconnecte l'utilisateur via Redux
-      localStorage.removeItem('authToken'); // Supprime le token de localStorage
-      localStorage.removeItem('userProfile'); // Supprime le profil utilisateur de localStorage (si stocké)
+      dispatch(logout()); 
+      localStorage.removeItem('authToken');
+      localStorage.removeItem('userProfile'); 
     };
   
 
-return(
+    return(
     <header>
           <nav className="main-nav">
         <Link className="main-nav-logo" to="/">
