@@ -7,7 +7,7 @@ import Logo from '../assets/argentBankLogo.webp'
 
 function Header() {
 
-    // Récupère dispatch, auth et profil utilisateur depuis Redux
+    // Récupère dispatch, auth et profil utilisateur depuis Redux store
     const dispatch = useDispatch();
     const isAuthenticated = useSelector((state) => state.authentication.isAuthenticated);  
     const userProfile = useSelector((state) => state.user);

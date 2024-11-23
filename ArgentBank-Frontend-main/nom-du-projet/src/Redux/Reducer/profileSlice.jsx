@@ -18,7 +18,7 @@ initialState: {
             state.userName = action.payload.body.userName;
             state.email = action.payload.body.email;
         },
-        // Action 'updateUserName' : Mets à jour le champ 'userName' du profil avec la valeur fournie dans l'action
+        // Mets à jour le champ 'userName' du profil avec la valeur fournie dans l'action
         updateUserName: (state, action) => {
         state.userName = action.payload;
         },
