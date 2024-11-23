@@ -9,7 +9,7 @@ basePath: /api/v1
 schemes:
   - http
 paths:
-  /user/login:
+  /login:
     post:
       tags:
         - User Module
@@ -65,8 +65,14 @@ paths:
         - User Module
       summary: User Profile API
       description: API for fetching a user profile
-      #produces:
-       # - application/json
+      parameters:
+        - type: string
+          in: header
+          name: Authorization
+          description: Attach Bearer JWT token
+          required: true
+      produces:
+        - application/json
       responses:
         '200':
           description: User profile retrieved successully
@@ -84,6 +90,11 @@ paths:
       summary: User Profile API
       description: API for updating a user profile
       parameters:
+        - type: string
+          in: header
+          name: Authorization
+          description: Attach Bearer JWT token
+          required: true
         - in: body
           name: body
           description: Update user profile attributes
@@ -101,58 +112,363 @@ paths:
           description: Invalid Fields
         '500':
           description: Internal Server Error
-securityDefinitions:
-  Bearer:
-    type: apiKey
-    name: Authorization
-    in: header
+          
+# Transaction
+  /user/transactions:
+    get:
+      security:
+        - Bearer: []
+      tags:
+        - Transactions
+      summary: all transactions for current month
+      description: API for fetching current month transactions
+      parameters:
+        - name: Authorization
+          in: header
+          required: true
+          description: Attach Bearer JWT token
+          type: string
+      responses:
+        '200':
+          description: Successful response
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Transaction'
+          examples:
+            application/json:
+              - id: 1
+                amount: 100.0
+                date: '2023-10-01'
+                description: 'Grocery shopping'
+              - id: 2
+                amount: 50.0
+                date: '2023-10-02'
+                description: 'Gas station'
+        '400':
+          description: Invalid Fields
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+          examples:
+            application/json:
+              message: "Invalid request parameters"
+              code: 400
+        '401':
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+          examples:
+            application/json:
+              message: "Unauthorized access"
+              code: 401
+        '403':
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+          examples:
+            application/json:
+              message: "Access forbidden"
+              code: 403
+        '404':
+          description: Transactions not found
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+          examples:
+            application/json:
+              message: "Transactions not found"
+              code: 404
+        '500':
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+          examples:
+            application/json:
+              message: "Internal server error"
+              code: 500
+  /user/transactions/{id}:
+    # Paramètre d'URL pour identifier une transaction spécifique
+    parameters:
+      - in: path
+        name: id
+        description: Id of the transaction
+        required: true
+        type: string
+    get:
+      security:
+        - Bearer: []
+      tags:
+        - Transactions
+      summary: details of a transaction
+      description: API to show a transaction
+      parameters:
+        - in: header
+          name: Authorization
+          description: Attach Bearer JWT token
+          required: true
+          type: string
+      responses:
+        '200':
+          description: Successful response
+          schema:
+            $ref: '#/definitions/Transaction'
+          examples:
+            application/json:
+              id: 1
+              amount: 100.0
+              date: '2023-10-01'
+              description: 'Grocery shopping'
+        '400':
+          description: Invalid Field
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+          examples:
+            application/json:
+              message: "Invalid request parameters"
+              code: 400
+        '401':
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+          examples:
+            application/json:
+              message: "Unauthorized access"
+              code: 401
+        '403':
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+          examples:
+            application/json:
+              message: "Access forbidden"
+              code: 403
+        '404':
+          description: Transactions not found
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+          examples:
+            application/json:
+              message: "Transaction not found"
+              code: 404
+        '500':
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+          examples:
+            application/json:
+              message: "Internal server error"
+              code: 500
+  /user/transactions/{id}/category:
+  # Paramètre de chemin pour identifier la transaction à modifier
+    parameters:
+      - in: path
+        name: id
+        description: Transaction category
+        required: true
+        type: string
+    patch:
+      security:
+        - Bearer: []
+      tags:
+        - Transactions
+      summary: update transaction information (category)
+      description: API to modify a transaction's category
+      parameters:
+        - in: header
+          name: Authorization
+          description: Attach Bearer JWT token
+          type: string
+          required: true
+        - in: body
+          name: body
+          required: true
+          description: Update transaction's informations
+          schema:
+            $ref: '#/definitions/TransactionsUpdateCategory'
+      responses:
+        '200':
+          description: transaction patched successfully
+        '400':
+          description: Invalid Fields
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+          examples:
+            application/json:
+              message: "Invalid request parameters"
+              code: 400
+        '401':
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+          examples:
+            application/json:
+              message: "Unauthorized access"
+              code: 401
+        '403':
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+          examples:
+            application/json:
+              message: "Access forbidden"
+              code: 403
+        '404':
+          description: Transactions not found
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+          examples:
+            application/json:
+              message: "Transaction not found"
+              code: 404
+        '500':
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+          examples:
+            application/json:
+              message: "Internal server error"
+              code: 500
+  /user/transactions/{id}/note:
+     # Paramètre de chemin pour identifier la transaction à laquelle ajouter une note
+    parameters:
+      - in: path
+        name: id
+        description: Transaction note
+        required: true
+        type: string
+    patch:
+      tags:
+        - Transactions
+      summary: add transaction information (note)
+      description: API to add a transaction
+      parameters:
+        - in: body
+          name: body
+          description: Transaction details
+          required: true
+          schema:
+            $ref: '#/definitions/Transaction'
+      responses:
+        '200':
+          description: transaction added successfully
+        '400':
+          description: Invalid Fields
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+          examples:
+            application/json:
+              message: "Invalid request parameters"
+              code: 400
+        '401':
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+          examples:
+            application/json:
+              message: "Unauthorized access"
+              code: 401
+        '403':
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+          examples:
+            application/json:
+              message: "Access forbidden"
+              code: 403
+        '404':
+          description: Transactions not found
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+          examples:
+            application/json:
+              message: "Transaction not found"
+              code: 404
+        '500':
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+          examples:
+            application/json:
+              message: "Internal server error"
+              code: 500
+
 definitions:
-  User:
-    properties:
-      email:
-        type: string
-        description: user email
-      password:
-        type: string
-        description: user password
-      firstName:
-        type: string
-        description: user first name
-      lastName:
-        type: string
-        description: user last name
-      userName:
-        type: string
-        description: user public name
   Login:
-    properties:
-      email:
-        type: string
-        description: user email
-      password:
-        type: string
-        description: user password
-  ApiResponse:
     type: object
     properties:
-      status:
-        type: integer
-      message:
+      username:
         type: string
-      body:
-        type: object
-        properties:
-          id:
-            type: string
-          email:
-            type: string
+        example: johndoe
+      password:
+        type: string
+        example: password123
   LoginResponse:
     type: object
     properties:
       token:
         type: string
+        example: eyJhbGciOiJIUzI1NiInR5cCI6IkpXVCJ9...
+      expiresIn:
+        type: integer
+        example: 3600
+  User:
+    type: object
+    properties:
+      username:
+        type: string
+        example: johndoe
+      password:
+        type: string
+        example: password123
+      email:
+        type: string
+        example: johndoe@example.com
   UserProfile:
     type: object
     properties:
-      userName:
+      firstName:
         type: string
+        example: John
+      lastName:
+        type: string
+        example: Doe
+      email:
+        type: string
+        example: johndoe@example.com
+  ApiResponse:
+    type: object
+    properties:
+      status:
+        type: string
+        example: success
+      message:
+        type: string
+        example: Operation completed successfully
+      data:
+        type: object
+        additionalProperties: true
+  TransactionsUpdateCategory:
+    type: object
+    properties:
+      category:
+        type: string
+        example: Groceries
+  Transaction:
+    type: object
+    properties:
+      note:
+        type: string
+        example: Dinner at restaurant
+  ErrorResponse:
+    type: object
+    properties:
+      message:
+        type: string
+        example: "Error message"
+      code:
+        type: integer
+        example: 400
+securityDefinitions:
+  Bearer:
+    type: apiKey
+    name: Authorization
+    in: header
