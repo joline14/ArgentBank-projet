@@ -16,10 +16,12 @@ const authSlice= createSlice({
     name: 'authentication',
     initialState,
     reducers:{
+          // Réducteur qui met à jour l'état pour indiquer une connexion réussi
         login: (state, action)=>{
             state.token= action.payload.token;
             state.isAuthenticated=true
         },
+           // Réducteur qui met à jour l'état pour indiquer une déconnexion
         logout: (state)=>{
             state.token= null;
             state.isAuthenticated=false;
@@ -28,6 +30,7 @@ const authSlice= createSlice({
     }
 })
 
+// Export les actions générées par le slice
 export const { login, logout } = authSlice.actions;
 
 export default authSlice.reducer;
