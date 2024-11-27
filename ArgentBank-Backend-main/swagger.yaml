@@ -9,7 +9,7 @@ basePath: /api/v1
 schemes:
   - http
 paths:
-  /login:
+  /user/login:
     post:
       tags:
         - User Module
@@ -65,14 +65,8 @@ paths:
         - User Module
       summary: User Profile API
       description: API for fetching a user profile
-      parameters:
-        - type: string
-          in: header
-          name: Authorization
-          description: Attach Bearer JWT token
-          required: true
-      produces:
-        - application/json
+       #produces:
+       # - application/json
       responses:
         '200':
           description: User profile retrieved successully
@@ -90,11 +84,6 @@ paths:
       summary: User Profile API
       description: API for updating a user profile
       parameters:
-        - type: string
-          in: header
-          name: Authorization
-          description: Attach Bearer JWT token
-          required: true
         - in: body
           name: body
           description: Update user profile attributes
@@ -392,60 +381,55 @@ paths:
               code: 500
 
 definitions:
-  Login:
-    type: object
+  User:
     properties:
-      username:
+      email:
         type: string
-        example: johndoe
+        description: user email
       password:
         type: string
-        example: password123
+        description: user password
+      firstName:
+        type: string
+        description: user first name
+      lastName:
+        type: string
+        description: user last name
+      userName:
+        type: string
+        description: user public name
+  Login:
+    properties:
+      email:
+        type: string
+        description: user email
+      password:
+        type: string
+        description: user password
+  ApiResponse:
+    type: object
+    properties:
+      status:
+        type: integer
+      message:
+        type: string
+      body:
+        type: object
+        properties:
+          id:
+            type: string
+          email:
+            type: string
   LoginResponse:
     type: object
     properties:
       token:
         type: string
-        example: eyJhbGciOiJIUzI1NiInR5cCI6IkpXVCJ9...
-      expiresIn:
-        type: integer
-        example: 3600
-  User:
-    type: object
-    properties:
-      username:
-        type: string
-        example: johndoe
-      password:
-        type: string
-        example: password123
-      email:
-        type: string
-        example: johndoe@example.com
   UserProfile:
     type: object
     properties:
-      firstName:
+      userName:
         type: string
-        example: John
-      lastName:
-        type: string
-        example: Doe
-      email:
-        type: string
-        example: johndoe@example.com
-  ApiResponse:
-    type: object
-    properties:
-      status:
-        type: string
-        example: success
-      message:
-        type: string
-        example: Operation completed successfully
-      data:
-        type: object
-        additionalProperties: true
   TransactionsUpdateCategory:
     type: object
     properties:
