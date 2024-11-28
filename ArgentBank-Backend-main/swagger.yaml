@@ -103,7 +103,7 @@ paths:
           description: Internal Server Error
           
 # Transaction
-  /user/transactions:
+  /account/{id}/transactions:
     get:
       security:
         - Bearer: []
@@ -174,7 +174,7 @@ paths:
             application/json:
               message: "Internal server error"
               code: 500
-  /user/transactions/{id}:
+  /transactions/{id}:
     # Paramètre d'URL pour identifier une transaction spécifique
     parameters:
       - in: path
@@ -246,21 +246,13 @@ paths:
             application/json:
               message: "Internal server error"
               code: 500
-  /user/transactions/{id}/category:
-  # Paramètre de chemin pour identifier la transaction à modifier
-    parameters:
-      - in: path
-        name: id
-        description: Transaction category
-        required: true
-        type: string
     patch:
       security:
         - Bearer: []
       tags:
         - Transactions
-      summary: update transaction information (category)
-      description: API to modify a transaction's category
+      summary: update transaction information
+      description: API to modify a transaction
       parameters:
         - in: header
           name: Authorization
@@ -272,7 +264,7 @@ paths:
           required: true
           description: Update transaction's informations
           schema:
-            $ref: '#/definitions/TransactionsUpdateCategory'
+            $ref: '#/definitions/TransactionsUpdate'
       responses:
         '200':
           description: transaction patched successfully
@@ -316,70 +308,6 @@ paths:
             application/json:
               message: "Internal server error"
               code: 500
-  /user/transactions/{id}/note:
-     # Paramètre de chemin pour identifier la transaction à laquelle ajouter une note
-    parameters:
-      - in: path
-        name: id
-        description: Transaction note
-        required: true
-        type: string
-    patch:
-      tags:
-        - Transactions
-      summary: add transaction information (note)
-      description: API to add a transaction
-      parameters:
-        - in: body
-          name: body
-          description: Transaction details
-          required: true
-          schema:
-            $ref: '#/definitions/Transaction'
-      responses:
-        '200':
-          description: transaction added successfully
-        '400':
-          description: Invalid Fields
-          schema:
-            $ref: '#/definitions/ErrorResponse'
-          examples:
-            application/json:
-              message: "Invalid request parameters"
-              code: 400
-        '401':
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/ErrorResponse'
-          examples:
-            application/json:
-              message: "Unauthorized access"
-              code: 401
-        '403':
-          description: Forbidden
-          schema:
-            $ref: '#/definitions/ErrorResponse'
-          examples:
-            application/json:
-              message: "Access forbidden"
-              code: 403
-        '404':
-          description: Transactions not found
-          schema:
-            $ref: '#/definitions/ErrorResponse'
-          examples:
-            application/json:
-              message: "Transaction not found"
-              code: 404
-        '500':
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/ErrorResponse'
-          examples:
-            application/json:
-              message: "Internal server error"
-              code: 500
-
 definitions:
   User:
     properties:
@@ -430,12 +358,17 @@ definitions:
     properties:
       userName:
         type: string
-  TransactionsUpdateCategory:
+  TransactionsUpdate:
     type: object
     properties:
       category:
+        required: false
         type: string
         example: Groceries
+      note:
+        required: false
+        type: string
+        example: Dinner at restaurant
   Transaction:
     type: object
     properties:
